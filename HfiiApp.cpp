@@ -35,17 +35,17 @@ uint16_t HfiiApp::showImage()
 	m_ptrSharedHfiiApp.m_resized_down = &resized_down;
 	const std::string stiWindowName = m_ptrSharedHfiiApp.m_strWindowName;
 
-    if(img.empty())
-    {
-        std::cout << "Could not read the image: " << std::endl;
-        return 1;
-    }
-    
+	if(img.empty())
+	{
+		std::cout << "Could not read the image: " << std::endl;
+		return 1;
+	}
+	
 	cv::namedWindow(stiWindowName, cv::WINDOW_NORMAL);
 	cv::resize(img, resized_down, cv::Size{0,0}, 0.5, 0.5, cv::INTER_LINEAR);
 	cv::setMouseCallback(stiWindowName, ClickCallBackFunc, &m_ptrSharedHfiiApp);
-    cv::imshow(stiWindowName, resized_down);
-    int k = cv::waitKey(0); // Wait for a keystroke in the window
+	cv::imshow(stiWindowName, resized_down);
+	int k = cv::waitKey(0); // Wait for a keystroke in the window
 
 	return SUCCESS;
 }
@@ -59,10 +59,10 @@ void ClickCallBackFunc(int event, int x, int y, int flags, void* userdata)
 	// Get pointer to image
 	cv::Mat * resized_down = ptrSharedHfiiApp->m_resized_down;
 
-    if(event == cv::EVENT_LBUTTONDOWN)
-    {
+	if(event == cv::EVENT_LBUTTONDOWN)
+	{
 		// Fill the set until it's size is == 4
-    	if(coordinatesSet->size() < 4)
+	if(coordinatesSet->size() < 4)
 		{
 			// Draw circles where the user has clicked
 			cv::circle(*resized_down, cv::Point(x,y), ticknes, red);

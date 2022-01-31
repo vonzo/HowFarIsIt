@@ -19,6 +19,7 @@ struct classcomp
 		return lhs.y < rhs.y;
 	}
 };
+
 // This struct will contain shared data for callbacks
 struct SharedHfiiApp
 {
@@ -55,8 +56,5 @@ class HfiiApp
 			SUCCESS,
 			FAIL
 		};
-
-		
-
 };
 #endif
