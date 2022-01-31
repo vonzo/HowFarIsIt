@@ -6,12 +6,30 @@
 #include <set>
 #include <opencv2/core/types.hpp>
 
-struct classcomp {
-  bool operator() (const cv::Point& lhs, const cv::Point& rhs) const
-  {
-	  return lhs.y<rhs.y;
-}
+static const cv::Scalar blue(255,0,0);
+static const cv::Scalar red(0,0,255);
+static int ticknes(5);
+
+
+// This struct will define how to sort the sets of type Point
+struct classcomp
+{
+  	bool operator() (const cv::Point& lhs, const cv::Point& rhs) const
+  	{
+		return lhs.y < rhs.y;
+	}
 };
+// This struct will contain shared data for callbacks
+struct SharedHfiiApp
+{
+	// This set will contain the 4 Points of the cornners
+	std::set<cv::Point,classcomp> m_coordinatesSet;
+	// resized image to be showed
+	cv::Mat * m_resized_down;
+	// Window name
+	const std::string m_strWindowName = "Display Window";
+};
+ 
 
 class HfiiApp  
 {
@@ -21,6 +39,9 @@ class HfiiApp
 		
 		// Private variables
 		std::string m_strFileName;
+
+		// Shared data
+		SharedHfiiApp m_ptrSharedHfiiApp;
 		
 
 	public:
@@ -35,7 +56,7 @@ class HfiiApp
 			FAIL
 		};
 
-		std::set<cv::Point,classcomp> m_coordinatesSet;
+		
 
 };
 #endif

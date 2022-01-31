@@ -5,6 +5,16 @@
 	
 #include "HfiiApp.hpp"  
 
+cv::Point MIN_X(const cv::Point p1, const cv::Point p2)
+{
+	return (p1.x < p2.x) ? p1 : p2;
+}
+
+cv::Point MAX_X(const cv::Point p1, const cv::Point p2)
+{
+	return (p1.x > p2.x) ? p1 : p2;
+}
+
 HfiiApp::HfiiApp(std::string strFileName)
 {
 	m_strFileName = strFileName;
@@ -22,6 +32,8 @@ uint16_t HfiiApp::showImage()
 {
 	cv::Mat img = imread(m_strFileName, cv::IMREAD_COLOR);
 	cv::Mat resized_down;
+	m_ptrSharedHfiiApp.m_resized_down = &resized_down;
+	const std::string stiWindowName = m_ptrSharedHfiiApp.m_strWindowName;
 
     if(img.empty())
     {
@@ -29,10 +41,10 @@ uint16_t HfiiApp::showImage()
         return 1;
     }
     
-	cv::namedWindow( "Display window", cv::WINDOW_NORMAL);
+	cv::namedWindow(stiWindowName, cv::WINDOW_NORMAL);
 	cv::resize(img, resized_down, cv::Size{0,0}, 0.5, 0.5, cv::INTER_LINEAR);
-	cv::setMouseCallback("Display window", ClickCallBackFunc, &m_coordinatesSet);
-    cv::imshow("Display window", resized_down);
+	cv::setMouseCallback(stiWindowName, ClickCallBackFunc, &m_ptrSharedHfiiApp);
+    cv::imshow(stiWindowName, resized_down);
     int k = cv::waitKey(0); // Wait for a keystroke in the window
 
 	return SUCCESS;
@@ -40,29 +52,47 @@ uint16_t HfiiApp::showImage()
 
 void ClickCallBackFunc(int event, int x, int y, int flags, void* userdata)
 {
-	std::set<cv::Point,classcomp> * coordinatesSet = (std::set<cv::Point,classcomp> *)userdata;
+	// Get shared data
+	SharedHfiiApp * ptrSharedHfiiApp = (SharedHfiiApp *)userdata;
+	// Get set with coordinates
+	std::set<cv::Point,classcomp> * coordinatesSet = &(ptrSharedHfiiApp->m_coordinatesSet);
+	// Get pointer to image
+	cv::Mat * resized_down = ptrSharedHfiiApp->m_resized_down;
 
-    if  ( event == cv::EVENT_LBUTTONDOWN )
+    if(event == cv::EVENT_LBUTTONDOWN)
     {
-        std::cout << "Left button of the mouse is clicked - position (" << x << ", " << y << ")" << std::endl;
-    	if(coordinatesSet->size() <4)
+		// Fill the set until it's size is == 4
+    	if(coordinatesSet->size() < 4)
 		{
+			// Draw circles where the user has clicked
+			cv::circle(*resized_down, cv::Point(x,y), ticknes, red);
+			cv::imshow(ptrSharedHfiiApp->m_strWindowName, *resized_down);
+			
+			// Add new element to set
 			coordinatesSet->insert(cv::Point(x,y));
 		}
-		std::set<cv::Point,classcomp>::iterator it;
-		std::cout << "myset contains:";
-		for (it=coordinatesSet->begin(); it!=coordinatesSet->end(); ++it)
-			std::cout << ' ' << *it;
-		std::cout << '\n';
-	}
-     else if  ( event == cv::EVENT_RBUTTONDOWN )
-     {
-          std::cout << "Points Cleared" << std::endl;
-		  coordinatesSet->clear();
-     }
-}
+		// If set's size is 4, draw "box"
+		if (coordinatesSet->size() == 4)
+		{
+			std::set<cv::Point,classcomp>::iterator it = coordinatesSet->begin();
+			cv::Point p1, p2, p3, p4;
+			p1 = *(it++);
+			p2 = *(it++);
+			p3 = *(it++);
+			p4 = *(it++);
 
-/* fncomp (cv::Point lpnt, cv::Point rpnt)
-{
-	return lpnt.y < rpnt.y;
-} */
+			cv::line(*resized_down, p1, p2, blue, 5);
+			cv::line(*resized_down, MIN_X(p1, p2), MIN_X(p3, p4), blue, ticknes);
+			cv::line(*resized_down, MAX_X(p1, p2), MAX_X(p3, p4), blue, ticknes);
+			cv::line(*resized_down, p3, p4, blue, 5);
+
+			cv::imshow(ptrSharedHfiiApp->m_strWindowName, *resized_down);
+		}
+
+	}
+	else if(event == cv::EVENT_RBUTTONDOWN)
+	{
+		std::cout << "Points Cleared" << std::endl;
+		coordinatesSet->clear();
+	}
+}
