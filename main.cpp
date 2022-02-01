@@ -3,7 +3,7 @@
 
 int main(int, char**) {
     std::cout << "Hello, world! from vscode + cmake \n";
-    HfiiApp app("/home/ivan/Downloads/calibration.jpg");
+    HfiiApp app("/home/ivan/Downloads/calibration.jpg", CHALLENGE);
 
     return 0;
 }
