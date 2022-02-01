@@ -9,6 +9,8 @@
 static const cv::Scalar blue(255,0,0);
 static const cv::Scalar red(0,0,255);
 static int ticknes(5);
+static const int A4wmm = 297;
+static const int A4hmm = 210;
 
 
 // This struct will define how to sort the sets of type Point
@@ -30,7 +32,14 @@ struct SharedHfiiApp
 	// Window name
 	const std::string m_strWindowName = "Display Window";
 };
- 
+
+// enum
+enum EnuCamera: std::uint16_t
+{
+	CHALLENGE
+};
+
+class Camera;
 
 class HfiiApp  
 {
@@ -43,11 +52,13 @@ class HfiiApp
 
 		// Shared data
 		SharedHfiiApp m_ptrSharedHfiiApp;
+
+		std::shared_ptr<Camera> m_camera;
 		
 
 	public:
 
-		HfiiApp(std::string strFileName);
+		HfiiApp(std::string strFileName, EnuCamera enuCamera);
 		~HfiiApp();
 
 		// enum

@@ -3,7 +3,10 @@
 #include <opencv2/highgui.hpp>
 #include "opencv2/imgproc/imgproc.hpp"
 	
-#include "HfiiApp.hpp"  
+#include "HfiiApp.hpp"
+#include "Camera.hpp"
+#include "ChallengeCamera.hpp"  
+
 
 cv::Point MIN_X(const cv::Point p1, const cv::Point p2)
 {
@@ -15,9 +18,14 @@ cv::Point MAX_X(const cv::Point p1, const cv::Point p2)
 	return (p1.x > p2.x) ? p1 : p2;
 }
 
-HfiiApp::HfiiApp(std::string strFileName)
+HfiiApp::HfiiApp(std::string strFileName, EnuCamera enuCamera)
 {
 	m_strFileName = strFileName;
+	if(enuCamera == CHALLENGE)
+	{
+		m_camera = std::make_shared<ChallengeCamera>();
+	}
+	
 	showImage();
 }
 	
@@ -95,4 +103,9 @@ void ClickCallBackFunc(int event, int x, int y, int flags, void* userdata)
 		std::cout << "Points Cleared" << std::endl;
 		coordinatesSet->clear();
 	}
+}
+
+void solve()
+{
+
 }
